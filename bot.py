@@ -7,15 +7,14 @@ client = commands.Bot(command_prefix  = 'wyatt ')
 
 @client.event
 async def on_ready():
+    await client.change_presence(game=discord.Game(name='Test'))
     print('Bot is ready.')
-
 
 #autorole
 @client.event
 async def on_member_join(member):
     role = discord.utils.get(member.server.roles, name='Example Role')
     await client.add_roles(member, role)
-
 
 #clear
 @client.command(pass_context=True)
