@@ -10,6 +10,15 @@ async def on_ready():
     print('Bot is ready.')
 
 
+@client.command(pass_context=True)
+async def clear(ctx, amount=100):
+    channel = ctx.message.channel
+    messages = []
+    async for message in client.logs_from(channel, limit=int(amount) + 1):
+        messages.append(message)
+    await client.delete_messages(messages)
+    await client.delete_say(amount + ' messages deleted.')
+
 #logs the users messages
 @client.event
 async def on_message(message):
@@ -28,10 +37,12 @@ async def on_message_delete(message):
     await client.send_message(channel, '{}: {}'.format(author, content))
 '''
 
+#returns Pong
 @client.command()
 async def ping():
     await client.say('Pong!')
 
+#returns the message
 @client.command()
 async def say(*args):
     output = ''
