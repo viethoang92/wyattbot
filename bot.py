@@ -3,8 +3,7 @@ from discord.ext import commands
 
 TOKEN = 'NTAyNTkwNjE5MDEzNjExNTQw.DqqQHA.Hn7V8ef9xUcHlvInozZ1YwdMhV4'
 
-client = commands.Bot(command_prefix  = 'wyatt')
-prefix = "wyatt"
+client = commands.Bot(command_prefix  = 'wyatt ')
 
 @client.event
 async def on_ready():
@@ -28,18 +27,17 @@ async def on_message_delete(message):
     await client.send_message(channel, '{}: {}'.format(author, content))
 '''
 
-@client.event
-async def on_message(message):
-    channel = message.channel
-    if message.content.startswith(prefix + ' ping'):
-        await client.send_message(channel,  'Pong!')
+@client.command()
+async def ping():
+    await client.say('Pong!')
 
-    if message.content.startswith(prefix + ' say'):
-        msg = message.content.split()
-        output = ''
-        for word in msg[1:]:
-            output += word 
-            output += ' '
-            await client.send_message(channel, output)
+@client.command()
+async def say(*args):
+    output = ''
+    for word in args:
+        output += word
+        output += ' '
+    await client.say(output)
+
 
 client.run(TOKEN)
