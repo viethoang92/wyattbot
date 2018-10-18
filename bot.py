@@ -10,6 +10,14 @@ async def on_ready():
     print('Bot is ready.')
 
 
+#autorole
+@client.event
+async def on_member_join(member):
+    role = discord.utils.get(member.server.roles, name='Example Role')
+    await client.add_roles(member, role)
+
+
+#clear
 @client.command(pass_context=True)
 async def clear(ctx, amount=100):
     channel = ctx.message.channel
