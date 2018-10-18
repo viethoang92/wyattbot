@@ -17,7 +17,7 @@ async def clear(ctx, amount=100):
     async for message in client.logs_from(channel, limit=int(amount) + 1):
         messages.append(message)
     await client.delete_messages(messages)
-    await client.delete_say(amount + ' messages deleted.')
+    await client.say('{} messages deleted.'.format(amount))
 
 #logs the users messages
 @client.event
