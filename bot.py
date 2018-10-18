@@ -9,14 +9,15 @@ client = commands.Bot(command_prefix  = 'wyatt ')
 async def on_ready():
     print('Bot is ready.')
 
-'''
+
 #logs the users messages
 @client.event
 async def on_message(message):
     author = message.author
     content = message.content
     print('{}: {}'.format(author, content))
-'''
+    await client.process_commands(message)
+
 '''
 #reposts message when message is deleted
 @client.event
