@@ -1,9 +1,23 @@
 import discord
 from discord.ext import commands
+import asyncio
+from itertools import cycle
 
 TOKEN = 'NTAyNTkwNjE5MDEzNjExNTQw.DqqQHA.Hn7V8ef9xUcHlvInozZ1YwdMhV4'
 
 client = commands.Bot(command_prefix  = 'wyatt ')
+status = ['Type wyatt ', 'Mario is dumb', 'Krissy is stupid']
+
+#changing status after some intervall time
+async def change_status():
+    await client.wait_until_ready()
+    msgs = cycle(status)
+    intervall = 60
+
+    while not client.is_closed:
+        current_status = next(msgs)
+        await client.change_presence(game=discord.Game(name=current_status))
+        await asyncio.sleep(intervall) #in seconds
 
 @client.event
 async def on_ready():
@@ -58,5 +72,5 @@ async def say(*args):
         output += ' '
     await client.say(output)
 
-
+client.loop.create_task(change_status())
 client.run(TOKEN)
