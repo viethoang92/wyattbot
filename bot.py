@@ -8,6 +8,9 @@ TOKEN = 'NTAyNTkwNjE5MDEzNjExNTQw.DqqQHA.Hn7V8ef9xUcHlvInozZ1YwdMhV4'
 client = commands.Bot(command_prefix  = 'wyatt ')
 status = ['Type wyatt ', 'Mario is dumb', 'Krissy is stupid']
 players = {}
+queues = {}
+
+
 
 #changing status after some intervall time
 async def change_status():
@@ -86,33 +89,66 @@ async def leave(ctx):
     voice_client = client.voice_client_in(server)
     await voice_client.disconnect()
 
-
+#play music
 @client.command(pass_context=True)
 async def play(ctx, url):
     channel = ctx.message.author.voice.voice_channel
     await client.join_voice_channel(channel)
     server = ctx.message.server
     voice_client = client.voice_client_in(server)
-    player = await voice_client.create_ytdl_player(url)
+    player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
     players[server.id] = player
     player.start()
 
+#pause music
 @client.command(pass_context=True)
 async def pause(ctx):
     id = ctx.message.server.id
     players[id].pause()
 
+#stop music
 @client.command(pass_context=True)
 async def stop(ctx):
     id = ctx.message.server.id
     players[id].stop()
 
+#resume music
 @client.command(pass_context=True)
 async def resume(ctx):
     id = ctx.message.server.id
     players[id].resume()
     
-    
+#skip music
+@client.command(pass_context=True)
+async def skip(ctx):
+    id = ctx.message.server.id
+    players[id].stop()
+    check_queue(id)
+
+
+@client.command(pass_context=True)
+async def queue(ctx, url):
+    server = ctx.message.server
+    voice_client = client.voice_in(server)
+    player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
+
+    if server.id in queues:
+        queues[server.id].append(player)
+    else:
+        queues[server.id] = [player]
+    await client.say('Video queued')
+
+#helper function
+def check_queue(id):
+    if queues[id] != []:
+        player = queues[id].pop(0)
+        players[id] = player
+        player.start()
+
+@client.command(pass_context=True)
+async def np():
+    if queues[id] != []:
+        client.say(str(players[id].title))
 
 client.loop.create_task(change_status())
 client.run(TOKEN)
