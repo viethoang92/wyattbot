@@ -97,5 +97,22 @@ async def play(ctx, url):
     players[server.id] = player
     player.start()
 
+@client.command(pass_context=True)
+async def pause(ctx):
+    id = ctx.message.server.id
+    players[id].pause()
+
+@client.command(pass_context=True)
+async def stop(ctx):
+    id = ctx.message.server.id
+    players[id].stop()
+
+@client.command(pass_context=True)
+async def resume(ctx):
+    id = ctx.message.server.id
+    players[id].resume()
+    
+    
+
 client.loop.create_task(change_status())
 client.run(TOKEN)
