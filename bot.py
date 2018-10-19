@@ -1,12 +1,13 @@
 import discord
+import youtube_dl
 from discord.ext import commands
 import asyncio
 from itertools import cycle
 
 TOKEN = 'NTAyNTkwNjE5MDEzNjExNTQw.DqqQHA.Hn7V8ef9xUcHlvInozZ1YwdMhV4'
-
 client = commands.Bot(command_prefix  = 'wyatt ')
 status = ['Type wyatt ', 'Mario is dumb', 'Krissy is stupid']
+players = {}
 
 #changing status after some intervall time
 async def change_status():
@@ -29,27 +30,6 @@ async def on_ready():
 async def on_member_join(member):
     role = discord.utils.get(member.server.roles, name='Example Role')
     await client.add_roles(member, role)
-
-@client.command(pass_context=True)
-async def join(ctx):
-    channel = ctx.message.author.voice.voice_channel
-    await client.join_voice_channel(channel)
-
-@client.command(pass_context=True)
-async def leave(ctx):
-    server = ctx.message.server
-    voice_client = client.voice_client_in(server)
-    await voice_client.disconnect()
-
-#clear
-@client.command(pass_context=True)
-async def clear(ctx, amount=100):
-    channel = ctx.message.channel
-    messages = []
-    async for message in client.logs_from(channel, limit=int(amount) + 1):
-        messages.append(message)
-    await client.delete_messages(messages)
-    await client.say('{} messages deleted.'.format(amount))
 
 #logs the users messages
 @client.event
@@ -82,6 +62,40 @@ async def say(*args):
         output += word
         output += ' '
     await client.say(output)
+
+#clear
+@client.command(pass_context=True)
+async def clear(ctx, amount=100):
+    channel = ctx.message.channel
+    messages = []
+    async for message in client.logs_from(channel, limit=int(amount) + 1):
+        messages.append(message)
+    await client.delete_messages(messages)
+    await client.say('{} messages deleted.'.format(amount))
+
+#join voice channel
+@client.command(pass_context=True)
+async def join(ctx):
+    channel = ctx.message.author.voice.voice_channel
+    await client.join_voice_channel(channel)
+
+#leave voice channel
+@client.command(pass_context=True)
+async def leave(ctx):
+    server = ctx.message.server
+    voice_client = client.voice_client_in(server)
+    await voice_client.disconnect()
+
+
+@client.command(pass_context=True)
+async def play(ctx, url):
+    channel = ctx.message.author.voice.voice_channel
+    await client.join_voice_channel(channel)
+    server = ctx.message.server
+    voice_client = client.voice_client_in(server)
+    player = await voice_client.create_ytdl_player(url)
+    players[server.id] = player
+    player.start()
 
 client.loop.create_task(change_status())
 client.run(TOKEN)
